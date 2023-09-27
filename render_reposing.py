@@ -26,6 +26,7 @@ from utils import render_utils, utils, ray_utils
 from data_io import neuman_helper
 from options import options
 from models.smpl import SMPL
+from PIL import Image
 
 
 def read_novel_caps(opt, num_caps, scene):
@@ -167,6 +168,7 @@ def main(opt):
         save_path = os.path.join('./demo', f'reposing/{os.path.basename(opt.scene_dir)}', f'out_{str(i).zfill(4)}.png')
         if not os.path.isdir(os.path.dirname(save_path)):
             os.makedirs(os.path.dirname(save_path))
+        out = Image.fromarray(np.uint8(out))
         imageio.imsave(save_path, out)
         print(f'image saved: {save_path}')
 

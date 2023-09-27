@@ -23,6 +23,7 @@ from utils import render_utils, utils, ray_utils
 from data_io import neuman_helper
 from options import options
 from models.smpl import SMPL
+from PIL import Image
 
 
 ACTOR_WEIGHTS_DICT = {
@@ -203,6 +204,7 @@ def main(opt):
         save_path = os.path.join('./demo', f'gathering/{opt.motion_name}', f'out_{str(i).zfill(4)}.png')
         if not os.path.isdir(os.path.dirname(save_path)):
             os.makedirs(os.path.dirname(save_path))
+        out = Image.fromarray(np.uint8(out))
         imageio.imsave(save_path, out)
         print(f'image saved: {save_path}')
 

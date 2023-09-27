@@ -22,6 +22,7 @@ from models import human_nerf
 from utils import render_utils, utils
 from data_io import neuman_helper
 from options import options
+from PIL import Image
 
 
 def eval_metrics(gts, preds):
@@ -85,6 +86,7 @@ def main(opt):
         save_path = os.path.join('./demo', f'test_views/{os.path.basename(opt.scene_dir)}', f'out_{str(i).zfill(4)}.png')
         if not os.path.isdir(os.path.dirname(save_path)):
             os.makedirs(os.path.dirname(save_path))
+        out = Image.fromarray(np.uint8(out))
         imageio.imsave(save_path, out)
         print(f'image saved: {save_path}')
         preds.append(imageio.imread(save_path))

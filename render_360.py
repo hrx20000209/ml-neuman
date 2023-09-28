@@ -79,7 +79,6 @@ def main_canonical_360(opt):
         if not os.path.isdir(os.path.dirname(save_path)):
             os.makedirs(os.path.dirname(save_path))
 
-        out = Image.fromarray(np.uint8(out))
         imageio.imsave(save_path, out)
         print(f'image saved: {save_path}')
 

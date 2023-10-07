@@ -1,4 +1,6 @@
-FROM nvidia/cuda:10.2-cudnn7-devel-ubuntu18.04
+FROM nvidia/cuda:11.3.1-cudnn8-devel-ubuntu20.04
+#FROM nvidia/cuda:11.3.1-cudnn8-devel-ubuntu20.04
+#FROM nvidia/cuda:10.2-cudnn7-devel-ubuntu18.04
 
 # Prevent stop building ubuntu at time zone selection.  
 ENV DEBIAN_FRONTEND=noninteractive
@@ -6,7 +8,7 @@ ENV PATH /opt/conda/bin:$PATH
 
 # Prepare and empty machine for building
 RUN rm /etc/apt/sources.list.d/cuda.list
-RUN rm /etc/apt/sources.list.d/nvidia-ml.list
+#RUN rm /etc/apt/sources.list.d/nvidia-ml.list
 RUN apt-get update && apt-get install -y \
     git \
     cmake \
@@ -66,7 +68,7 @@ RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-py38_4.11.0-Linu
     /opt/conda/bin/conda clean -tipsy && \
     ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
     echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
-    echo "conda activate base" >> ~/.bashrc
+    echo "conda run -n base" >> ~/.bashrc
 
 RUN conda init bash
 
@@ -96,21 +98,22 @@ RUN cd /neuman/preprocess  && \
 # ROMP environment
 RUN . /root/.bashrc && \
     conda create -n ROMP python==3.8.8 && \
-    conda activate ROMP && \
-    conda install -c pytorch pytorch=1.9.1 torchvision=0.10.1 cudatoolkit=10.2 && \
+    conda run -n ROMP && \
+#    conda install -c pytorch pytorch=1.9.1 torchvision=0.10.1 cudatoolkit=10.2 && \
+    conda install -c pytorch pytorch=1.11 torchvision torchaudio cudatoolkit=11.3 && \
     conda install -c fvcore -c iopath -c conda-forge fvcore iopath && \
     conda install -c bottler nvidiacub && \
     conda install pytorch3d -c pytorch3d
 
 RUN . /root/.bashrc && \
-    conda activate ROMP && \
+    conda run -n ROMP && \
     cd /neuman/preprocess/ROMP && \
     pip install -r requirements.txt && \
     pip install av
 
 # detectron2 environment
 RUN . /root/.bashrc && \
-    conda activate ROMP && \
+    conda run -n ROMP && \
     cd /neuman/preprocess && \
     python -m pip install -e detectron2 && \
     pip install setuptools==59.5.0
@@ -118,9 +121,11 @@ RUN . /root/.bashrc && \
 # mmpose environment
 RUN . /root/.bashrc && \
     conda create -n open-mmlab python=3.7 -y && \
-    conda activate open-mmlab && \
-    conda install pytorch==1.8.0 torchvision==0.9.0 cudatoolkit=10.2 -c pytorch && \
-    pip install mmcv-full https://download.openmmlab.com/mmcv/dist/cu102/torch1.8.0/mmcv_full-1.5.0-cp37-cp37m-manylinux1_x86_64.whl && \
+    conda run -n open-mmlab && \
+#    conda install pytorch==1.8.0 torchvision==0.9.0 cudatoolkit=10.2 -c pytorch && \
+    conda install -c pytorch pytorch=1.11 torchvision torchaudio cudatoolkit=11.3 && \    
+#    pip install mmcv-full https://download.openmmlab.com/mmcv/dist/cu102/torch1.8.0/mmcv_full-1.5.0-cp37-cp37m-manylinux1_x86_64.whl && \
+    pip install mmcv-full -f https://download.openmmlab.com/mmcv/dist/cu113/torch1.11.0/index.html && \
     cd /neuman/preprocess/mmpose && \
     pip install -r requirements.txt && \
     pip install -v -e . && \
@@ -130,8 +135,9 @@ RUN . /root/.bashrc && \
 # NeuMan environment
 RUN . /root/.bashrc && \
     conda create -n neuman_env python=3.7 -y && \
-    conda activate neuman_env && \
-    conda install pytorch==1.8.0 torchvision==0.9.0 cudatoolkit=10.2 -c pytorch && \
+    conda run -n neuman_env && \
+#    conda install pytorch==1.8.0 torchvision==0.9.0 cudatoolkit=10.2 -c pytorch && \
+    conda install -c pytorch pytorch=1.11 torchvision torchaudio cudatoolkit=11.3 && \
     conda install -c fvcore -c iopath -c conda-forge fvcore iopath && \
     conda install -c bottler nvidiacub && \
     conda install pytorch3d -c pytorch3d && \
